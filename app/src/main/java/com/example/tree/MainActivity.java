@@ -54,16 +54,18 @@ public class MainActivity extends AppCompatActivity {
 
         databaseHelper.clearDatabase(TABLE_SCORES);
 
-        Scores score = new Scores(309, 60);
+        boolean test = databaseHelper.hasData();
+
+        Scores score = new Scores(310, 60);
         databaseHelper.addScore(score);
 
         //finds start date
-        boolean test = databaseHelper.hasData();
+        test = databaseHelper.hasData();
         //startDate = databaseHelper.findDateWithID(1);
         //Cursor tester = databaseHelper.getDateForGivenID("1");
         //Cursor testCursor = databaseHelper.getDateForGivenID2(1);
-        startDate = databaseHelper.getDateForGivenID(1);
-        int scoreTemp = databaseHelper.getScoreForGivenDate(309);
+        startDate = databaseHelper.getDateForGivenID(0);
+        int scoreTemp = databaseHelper.getScoreForGivenDate(310);
 
 //        if(databaseHelper.hasData()){
 //            startDate = databaseHelper.findDateWithID(1);
