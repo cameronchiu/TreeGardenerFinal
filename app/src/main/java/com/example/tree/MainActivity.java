@@ -62,8 +62,16 @@ public class MainActivity extends AppCompatActivity {
         //finds start date
         test = databaseHelper.hasData();
         //startDate = databaseHelper.findDateWithID(1);
-        //Cursor tester = databaseHelper.getDateForGivenID("1");
+//        Cursor tester = databaseHelper.getDateForGivenID("1");
         //Cursor testCursor = databaseHelper.getDateForGivenID2(1);
+//        Cursor AllScores = databaseHelper.getScores();
+//        AllScores.moveToFirst();
+//        while(!AllScores.isAfterLast()){
+//            int IDTemp = AllScores.getInt(0);
+//            int dateTemp = AllScores.getInt(1);
+//            int scoreTemp = AllScores.getInt(2);
+//        }
+
         startDate = databaseHelper.getDateForGivenID(0);
         int scoreTemp = databaseHelper.getScoreForGivenDate(310);
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
@@ -105,7 +106,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         int date = -1;
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_ID + "='" +  id + "'", null);
+        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_ID + "=" +  id, null);
 
 
         if (entry.moveToFirst()) {
@@ -127,6 +128,22 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return score;
     }
+
+    public Cursor getScores()
+
+    {
+
+        Cursor cursor = getReadableDatabase().query("scores",
+
+                new String[] { "_id", "date", "score"},
+
+                null, null, null, null, null);
+
+        return cursor;
+
+    }
+
+
 
 //    public Cursor getDateForGivenID2(int id) {
 //        SQLiteDatabase db = this.getWritableDatabase();
