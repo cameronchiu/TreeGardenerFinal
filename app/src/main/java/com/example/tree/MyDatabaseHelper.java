@@ -35,9 +35,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
      */
 
     public void onCreate(SQLiteDatabase db) {
-        String query = " CREATE TABLE " + TABLE_SCORES + " ( " + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_DATE + " TEXT, " +  COLUMN_SCORE + " INTEGER )" + ";";
-        db.execSQL(query);
+        db.execSQL("create table " + TABLE_SCORES + "(_id INTEGER, date INTEGER, score INTEGER)");
     }
 
     @Override
@@ -53,8 +51,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         // it is similar to how we would put items into an intent
 
         ContentValues values = new ContentValues();
+        values.put(COLUMN_ID, score.get_id());
         values.put(COLUMN_DATE, score.get_date());
-        values.put(COLUMN_SCORE, score.get_date());
+        values.put(COLUMN_SCORE, score.get_score());
         SQLiteDatabase db = getWritableDatabase();
         long result = db.insert(TABLE_SCORES, null, values);  // inserts these values into this table
 
@@ -63,50 +62,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.close();             // need to close the database when we are done modifying it.
     }
 
-//    public int findScoreWithDate(int date) {
-//
-//        int score = 0;
-//        SQLiteDatabase db = getWritableDatabase();
-//        String query = "SELECT FROM " + TABLE_SCORES + " WHERE " + COLUMN_DATE + " = '" + date;
-//        Cursor c = db.rawQuery(query, null);
-//
-//        // Move the cursor to the first position and then move through the db to the last
-//        c.moveToFirst();
-//        while(!c.isAfterLast()) {
-//            if(c.getString(c.getColumnIndex(COLUMN_SCORE)) != null ) {
-//                score = c.getColumnIndex(COLUMN_SCORE);
-//            }
-//            c.moveToNext();
-//        }
-//        db.close();
-//        return score;
-//    }
 
-//    public int findDateWithID(int id) {
-//
-//        int date = 0;
-//        SQLiteDatabase db = getWritableDatabase();
-//        String query = "SELECT" + COLUMN_DATE +" FROM " + TABLE_SCORES + " WHERE " + COLUMN_ID + " = '" + id;
-//        Cursor c = db.rawQuery(query, null);
-//
-//        // Move the cursor to the first position and then move through the db to the last
-//        c.moveToFirst();
-//        while(!c.isAfterLast()) {
-//            if(c.getString(c.getColumnIndex(COLUMN_DATE)) != null ) {
-//                date = c.getColumnIndex(COLUMN_DATE);
-//            }
-//            c.moveToNext();
-//        }
-//        db.close();
-//        return date;
-//    }
+
+
 
     public int getDateForGivenID(int id){
 
         int date = -1;
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_ID + "=" +  id, null);
+        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE _id = " +  id , null);
 
 
         if (entry.moveToFirst()) {
@@ -116,53 +81,59 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return date;
     }
 
+
     public int getScoreForGivenDate(int date){
         int score = -1;
 
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_DATE + "='" +  date + "'", null);
+        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_DATE + "=" +  date, null);
 
         if (entry.moveToFirst()) {
-            score = entry.getInt(entry.getColumnIndex(COLUMN_DATE));
+            score = entry.getInt(entry.getColumnIndex(COLUMN_SCORE));
         }
 
+        entry.close();
+
         return score;
-    }
-
-    public Cursor getScores()
-
-    {
-
-        Cursor cursor = getReadableDatabase().query("scores",
-
-                new String[] { "_id", "date", "score"},
-
-                null, null, null, null, null);
-
-        return cursor;
 
     }
 
+    public int getScoreForGivenID(int id){
+        int score = -1;
+
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_ID + "=" +  id, null);
+
+        if (entry.moveToFirst()) {
+            score = entry.getInt(entry.getColumnIndex(COLUMN_SCORE));
+        }
+
+        entry.close();
+
+        return score;
+
+    }
+
+    public int getIDForGivenDate(int date){
+        int id = -1;
+
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor entry = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_SCORES + " WHERE " +COLUMN_DATE + "=" +  date, null);
+
+        if (entry.moveToFirst()) {
+            id = entry.getInt(entry.getColumnIndex(COLUMN_ID));
+        }
+
+        entry.close();
+
+        return id;
+
+    }
 
 
-//    public Cursor getDateForGivenID2(int id) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-////        Cursor cursor = db.rawQuery("SELECT" + COLUMN_DATE + "FROM" + TABLE_SCORES + "WHERE" + COLUMN_ID + " = " + "'"+String.valueOf(id)+"'" ,null);
-////        return cursor;
-////    }
-//
-////    public String getDate(long id) {
-////
-////        String rv = "not found";
-////        SQLiteDatabase db = this.getWritableDatabase();
-////        String whereclause = "ID=?";
-////        String[] whereargs = new String[]{String.valueOf(id)};
-////        Cursor csr = db.query(TABLE_SCORES,null,whereclause,whereargs,null,null,null);
-////        if (csr.moveToFirst()) {
-////            rv = csr.getString(csr.getColumnIndex(COLUMN_DATE));
-////        }
-////        return rv;
-////    }
+
+
+
 
 
 
@@ -192,43 +163,15 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         String clearDBQuery = "DELETE FROM "+TABLE_NAME;
         db.execSQL(clearDBQuery);
     }
-    // Right now this method will remove all entries with this name
-//    public void removeScore(String scoreName, int scoreNum) {
-//        SQLiteDatabase db = getWritableDatabase();
-//        String query = "DELETE FROM " + TABLE_SCORES + " WHERE " + COLUMN_SCORE_NAME + " = '" +
-//                scoreName + "'" + " AND " + COLUMN_SCORE + " = '" + scoreNum + "'";
-//        db.execSQL(query);
-//        db.close();
-//    }
 
+    public int getProfilesCount(String TABLE_NAME) {
+        String countQuery = "SELECT  * FROM " + TABLE_NAME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
 
-
-    // This method creates a String representation of all the database elements
-    // this is simply for quick viewing of our database contents
-
-//    public String databasetoString() {
-//        String dbstring = "";
-//        SQLiteDatabase db = getWritableDatabase();
-//        String query = "SELECT * FROM " + TABLE_SCORES + " WHERE 1";
-//        // This means to select all from the database
-//
-//        // The cursor will extract the entries from the database
-//        Cursor c = db.rawQuery(query, null);
-//
-//        // Move the cursor to the first position and then move through the db to the last
-//        c.moveToFirst();
-//        while(!c.isAfterLast()) {
-//            if(c.getString(c.getColumnIndex(COLUMN_START_DATE)) != null ) {
-//                dbstring += c.getString(c.getColumnIndex(COLUMN_START_DATE)) + ", ";
-//                dbstring += c.getString(c.getColumnIndex(COLUMN_SCORE));
-//                dbstring += "\n";
-//            }
-//            c.moveToNext();
-//        }
-//
-//        db.close();
-//        return dbstring;
-//
-//    }
 
 }

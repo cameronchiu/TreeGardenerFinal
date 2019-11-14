@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +23,7 @@ public class QuestionsActivity extends AppCompatActivity {
     MyDatabaseHelper databaseHelper;
     private int todayScore = 0;
     private int todayDayOfYearInt;
+    private int currentIDInt;
 
 
     @Override
@@ -32,9 +34,13 @@ public class QuestionsActivity extends AppCompatActivity {
         databaseHelper = new MyDatabaseHelper(this, null, null, 1);
 
         Intent intent = getIntent();
-        String todayDayOfYear = intent.getStringExtra("info");
+        String todayDayOfYear = intent.getStringExtra("info1");
+        String currentID = intent.getStringExtra("info2");
+
 
         todayDayOfYearInt = Integer.valueOf(todayDayOfYear);
+        currentIDInt = Integer.valueOf(currentID);
+
 
         if(databaseHelper.hasData()) {
             todayScore = databaseHelper.getScoreForGivenDate(todayDayOfYearInt);
@@ -47,6 +53,8 @@ public class QuestionsActivity extends AppCompatActivity {
         // sends you back to Main Activity
         // gets score name and value from edittext and uses it to create a new Scores object
         // it adds this element to the database and then reprints the database to show the change
+
+
 
         EditText steps = (EditText) findViewById(R.id.editTextSteps);
         EditText water = (EditText) findViewById(R.id.editTextCups);
@@ -63,6 +71,8 @@ public class QuestionsActivity extends AppCompatActivity {
         int inputHoursOfSleep = Integer.parseInt(sleep.getText().toString());
         int inputHoursOfExercise = Integer.parseInt(exercise.getText().toString());
 
+
+        Toast.makeText(QuestionsActivity.this, "Success! Check back in a few days to see if your tree has grown!",Toast.LENGTH_LONG).show();
 
 
         if(inputSteps>=stepsGoal&&inputSteps<stepsGoal*1.5){
@@ -102,11 +112,16 @@ public class QuestionsActivity extends AppCompatActivity {
             todayScore += 10;
         }
 
-        Scores score = new Scores(todayScore, todayDayOfYearInt);
+        Scores score = new Scores(currentIDInt, todayScore, todayDayOfYearInt);
 
         databaseHelper.addScore(score);
 
+
         Intent intent2 = new Intent(this, MainActivity.class);
         startActivity(intent2);
+
+
+
+
     }
 }

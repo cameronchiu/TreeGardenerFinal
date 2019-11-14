@@ -5,7 +5,8 @@ public class Scores {
     private int _score;
     private int _id;
 
-    public Scores(int date, int score) {
+    public Scores(int id, int date, int score) {
+        this._id = id;
         this._date = date;
         this._score = score;
     }

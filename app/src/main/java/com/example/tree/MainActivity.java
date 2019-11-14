@@ -18,6 +18,12 @@ import java.util.Calendar;
 
 import static com.example.tree.MyDatabaseHelper.TABLE_SCORES;
 
+/**
+ * Things to work on:
+ * Disable user from growing tree without all filled (or put value of 0)
+ *
+ */
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     //Database variables
     private int startDate;
 
+    private int currentID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,39 +60,37 @@ public class MainActivity extends AppCompatActivity {
 
         databaseHelper = new MyDatabaseHelper(this, null, null, 1);
 
-        databaseHelper.clearDatabase(TABLE_SCORES);
-
         boolean test = databaseHelper.hasData();
 
-        Scores score = new Scores(310, 60);
-        databaseHelper.addScore(score);
+//        databaseHelper.clearDatabase(TABLE_SCORES);
+//        Scores score1 = new Scores(0,319, 60);
+////        Scores score2 = new Scores(1,314, 64);
+////        Scores score3 = new Scores(2,315, 62);
+//        databaseHelper.addScore(score1);
+//        databaseHelper.addScore(score2);
+//        databaseHelper.addScore(score3);
+//        int dateTemp = databaseHelper.getDateForGivenID(2);
+//        int scoreTemp = databaseHelper.getScoreForGivenID(2);
+//        int idTemp = databaseHelper.getIDForGivenDate(313);
 
-        //finds start date
-        test = databaseHelper.hasData();
-        //startDate = databaseHelper.findDateWithID(1);
-//        Cursor tester = databaseHelper.getDateForGivenID("1");
-        //Cursor testCursor = databaseHelper.getDateForGivenID2(1);
-//        Cursor AllScores = databaseHelper.getScores();
-//        AllScores.moveToFirst();
-//        while(!AllScores.isAfterLast()){
-//            int IDTemp = AllScores.getInt(0);
-//            int dateTemp = AllScores.getInt(1);
-//            int scoreTemp = AllScores.getInt(2);
-//        }
 
-        startDate = databaseHelper.getDateForGivenID(0);
-        int scoreTemp = databaseHelper.getScoreForGivenDate(310);
 
-//        if(databaseHelper.hasData()){
-//            startDate = databaseHelper.findDateWithID(1);
-//        }
+        int count = databaseHelper.getProfilesCount(TABLE_SCORES);
+        int[] phase = {R.drawable.fill0,R.drawable.fill1,R.drawable.fill2,R.drawable.fill3,R.drawable.fill4,R.drawable.fill5,R.drawable.fill6,R.drawable.fill7};
+        ImageView currentphase = (ImageView) findViewById(R.id.imageView5);
+        currentphase.setImageResource(phase[count]);
+
+
+
+
+
+
 
         //Sets home screen button to Sunday, Monday, Tuesday, etc.
         DateFormat dayFormat = new SimpleDateFormat("EEEE");
         String day = dayFormat.format(Calendar.getInstance().getTime());
         Button startDay = (Button) findViewById(R.id.buttonDayOfWeek);
         startDay.setText(day);
-
 
 
         //gets current day out of 365 (todayDayOfYear)
@@ -95,14 +101,23 @@ public class MainActivity extends AppCompatActivity {
 
         todayDayOfYear = outOf365(currentDayOfMonthInt,currentMonthInt);
 
+        if(databaseHelper.hasData()){
+            startDate = databaseHelper.getDateForGivenID(0);
+            currentID = databaseHelper.getIDForGivenDate(todayDayOfYear-1) +1;
+        }
+        else{
+            startDate = todayDayOfYear;
+            currentID = 0;
+        }
+
+
         int scoreSum = 0;
-        if(databaseHelper.hasData()) {
-            for (int i = todayDayOfYear; i >= startDate; i--) {
-                scoreSum += databaseHelper.getScoreForGivenDate(i);
+        if(currentID!=0) {
+            for (int i = currentID; i > 0; i--) {
+                scoreSum += databaseHelper.getScoreForGivenID(i-1);
             }
         }
         todayStage = calculateStage(scoreSum);
-
 
         //grows tree upon opening
         ImageView treeImage = (ImageView) findViewById(R.id.imageViewTree);
@@ -115,10 +130,16 @@ public class MainActivity extends AppCompatActivity {
         /*
         Sends information from Main to Questions
          */
+
+        Button myButton = (Button) findViewById(R.id.buttonDayOfWeek);
+        myButton.setEnabled(false);
+
         Intent intent = new Intent(this, QuestionsActivity.class);
 
         String todayDayOfYearStr = Integer.toString(todayDayOfYear);
-        intent.putExtra("info", todayDayOfYearStr);
+        String currentIDStr = Integer.toString(currentID);
+        intent.putExtra("info1", todayDayOfYearStr);
+        intent.putExtra("info2", currentIDStr);
 
         startActivity(intent);
 
@@ -219,12 +240,22 @@ public class MainActivity extends AppCompatActivity {
             return R.drawable.stage3;
 
         }
-        if (scoreSum > 60 && scoreSum <= 120) {
+        if (scoreSum >= 60 && scoreSum <= 120) {
             return R.drawable.stage2;
 
         }
 
         return R.drawable.stage1;
+
+    }
+
+    public void restart(View v){
+        databaseHelper.clearDatabase(TABLE_SCORES);
+        ImageView currentphase = (ImageView) findViewById(R.id.imageView5);
+        currentphase.setImageResource(R.drawable.fill0);
+        ImageView treeImage = (ImageView) findViewById(R.id.imageViewTree);
+        treeImage.setImageResource(R.drawable.stage1);
+        Toast.makeText(this, "Your week has been restarted! Click on the button to start a new week!",Toast.LENGTH_LONG).show();
 
     }
 }

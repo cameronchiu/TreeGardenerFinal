@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name = "questionWidth">250dp</dimen>
+    <dimen name = "questionHeight">30dp</dimen>
+    <dimen name = "answerWidth">100dp</dimen>
+    <dimen name = "answerHeight">50dp</dimen>
+
+</resources>
